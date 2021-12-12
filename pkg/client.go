@@ -2,6 +2,7 @@ package truenas
 
 import (
 	"bytes"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -17,8 +18,9 @@ type Client struct {
 }
 
 type Config struct {
-	Endpoint string `yaml:"endpoint"`
-	ApiKey   string `yaml:"apiKey"`
+	Endpoint           string `yaml:"endpoint"`
+	ApiKey             string `yaml:"apiKey"`
+	InsecureSkipVerify bool   `yaml:"insecureSkipVerify"`
 }
 
 func LoadConfigFromFile(fileName string) (*Config, error) {
@@ -34,7 +36,13 @@ func LoadConfigFromFile(fileName string) (*Config, error) {
 
 func NewClient(config *Config) (*Client, error) {
 	return &Client{
-		client:   &http.Client{},
+		client: &http.Client{
+			Transport: &http.Transport{
+				TLSClientConfig: &tls.Config{
+					InsecureSkipVerify: config.InsecureSkipVerify,
+				},
+			},
+		},
 		apiKey:   config.ApiKey,
 		endpoint: config.Endpoint,
 	}, nil
