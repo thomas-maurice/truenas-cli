@@ -6,7 +6,7 @@ import (
 )
 
 func mustGetClient(cfgFile string) *truenas.Client {
-	cfg, err := truenas.LoadConfigFromFile("config.yaml")
+	cfg, err := truenas.LoadConfigFromFile(configFile)
 	if err != nil {
 		logrus.Fatalf("could not load config: %s", err)
 	}
